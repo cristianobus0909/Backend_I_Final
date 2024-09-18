@@ -25,7 +25,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
 const httpServer = app.listen(PORT,()=>{
-    console.log(`Escuchando en puerto: ${PORT}`);
+    console.log(`Running on port: ${PORT}`);
 
 })
 
