@@ -9,7 +9,7 @@ router.get("/", async(req,res)=>{
         const allCarts = await cartsModel.find();
         return res.status(201).send(allCarts);
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear el carrito' });
+        res.status(500).json({ error: 'Error al obtener el carrito' });
     }
 });
 router.get("/:cid", async(req,res)=>{
@@ -58,7 +58,7 @@ router.post("/:cid/products/:pid", async(req,res)=>{
         res.status(500).json({ error: 'No se pudo agregar el producto al carrito' });
     }
 });
-//deberá actualizar el carrito con un arreglo de productos con el formato especificado arriba.
+
 router.put('/:cid', async (req, res) => {
     const cartId = req.params.cid;
     const products = req.body.products;
@@ -81,9 +81,33 @@ router.put('/:cid', async (req, res) => {
         res.status(500).send("No se pudo actualizar el documento")
     }
 });
-//deberá poder actualizar SÓLO la cantidad de ejemplares del producto por cualquier cantidad pasada desde req.body
-router.put("/:cid/products/:pid", (req,res)=>{
-    res.send('Hola desde carts');
+
+router.put("/:cid/products/:pid", async(req,res)=>{
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+    const quantity = parseInt(req.body.quantity);
+    try {
+        const cart =  await cartsModel.findOne({_id:cartId});
+        
+        if(!cart){
+            return res.status(404).json({message:'Carrito no encontrado'})
+        }
+        if (cart.products.productId == productId) {
+            cart.products.quantity = quantity
+        }
+        
+        await cartsModel.updateOne({ _id: cart._id },{ products: cart}, function(err, result ){
+            if(err){
+                res.status(500).json({ error:'Error al guardar los cambios' });
+            }else{
+                res.status(201).send(result);
+            }  
+        });
+        res.json({ message: 'Producto agregado al carrito correctamente', cart });
+    } catch (error) {
+        console.error('Error al agregar el producto al carrito:', error);
+        res.status(500).json({ error: 'No se pudo agregar el producto al carrito' });
+    }
 });
 router.delete('/:cid', async (req, res)=>{
     const cartId = req.params.cid;
@@ -107,5 +131,7 @@ router.delete('/:cid', async (req, res)=>{
         res.status(500).json({ error: 'No se pudo eliminar el carrito' });
     }
 });
+router.put("/:cid/products/:pid", async(req,res)=>{
 
+});
 export default router;
