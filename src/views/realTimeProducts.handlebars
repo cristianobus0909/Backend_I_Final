@@ -1,25 +1,20 @@
-<div>
-    <h1>Productos</h1>
-    <div>
-        <form action="post">
-            <label for="">Nombre:</label>
-            <input type="text">
-            <label for="">Descripcion:</label>
-            <input type="text">
-            <label for="">Categoria:</label>
-            <input type="text">
-            <label for="">Precio:</label>
-            <input type="text">
-            <label for="">Codigo:</label>
-            <input type="text">
-            <label for="">Stock:</label>
-            <input type="text">
-            <label for="">Imagen:</label>
-            <input type="file">
-        </form>
-        <button type="submit">Enviar</button>
-    </div>
-    <div>
-        {{> product}}
-    </div>
+<div class="containerAdd">
+    <form class="addProductForm" id="addProductForm" action="/realtimeproducts" method="POST">
+        <input type="text" name="title" placeholder="Nombre del producto" required>
+        <input type="number" name="price" placeholder="Precio" required>
+        <input type="text" name="description" placeholder="Descripcion" required>
+        <input type="text" name="category" placeholder="Categoria" required>
+        <input type="text" name="thumbnails" placeholder="Foto" required>
+        <input type="number" name="code" placeholder="Codigo" required>
+        <input type="number" name="stock" placeholder="Stock" required>
+        <button type="submit">Agregar Producto</button>
+    </form>
 </div>
+<div class="containerDelete">
+    <form class="deleteProductForm" id="deleteProductForm" action="/realtimeproducts" method="POST">
+        <input type="number" name="productId" placeholder="ID del producto a eliminar" required>
+        <button type="submit">Eliminar Producto</button>
+    </form>
+</div>
+
+{{>product}}

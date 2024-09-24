@@ -1,12 +1,25 @@
 import { Router } from "express";
+import ProductModel from "../models/products.model.js"
+import bodyParser from 'body-parser';
 
 const viewsRouter = Router();
 
-viewsRouter.get("/", (req, res) => {
-    res.redirect('home',{});
+viewsRouter.use(bodyParser.json());
+
+viewsRouter.get("/", async(req, res) => {
+    let products = await ProductModel.find()
+    products = await ProductModel.aggregate([
+        { $group: { _id: "$category", total: { $sum: "$price" }}},
+        
+    ])
+    res.render('home',{
+        title: 'Backend | Handlebars',
+        products: products
+    });
 });
-viewsRouter.get("/realtimeproducts", (req, res) => {
-    res.render('realTimeProducts',{});
+viewsRouter.get("/realtimeproducts", async(req, res) => {
+    let products = await ProductModel.find()
+    res.render('realTimeProducts',{products:products});
 });
 viewsRouter.post('/realtimeproducts', async(req, res)=>{
     const {
