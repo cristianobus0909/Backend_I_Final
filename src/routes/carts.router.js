@@ -34,25 +34,30 @@ router.post("/", async (req, res) => {
         res.status(500).json({ error: 'Error al crear el carrito' });
     }
 });
-router.post("/:cid/products/:pid", async(req,res)=>{
+router.put("/:cid/products/:pid", async(req,res)=>{
     const cartId = req.params.cid;
     const productId = req.params.pid;
     const quantity = parseInt(req.body.quantity);
     try {
-        const cart =  await cartsModel.findOne({_id:cartId});
-        
+        const cart = await cartsModel.findOne({ _id: cartId });
+        const product = await ProductModel.findById({_id: productId});
+
         if(!cart){
             return res.status(404).json({message:'Carrito no encontrado'})
         }
-        cart.products.push({product : productId , quantity : quantity}) ;
-        await cartsModel.updateOne({ _id: cart._id },{ products: cart}, function(err, result ){
-            if(err){
-                res.status(500).json({ error:'Error al guardar los cambios' });
-            }else{
-                res.status(201).send(result);
-            }  
+        if (!product) {
+            return res.status(404).json({message: "Producto no encontrado"})
+        }
+        cart.products.push({ productId: product.id, quantity: quantity });
+        console.log(cart.products);
+        
+        const result = await cartsModel.updateOne({ _id: cart._id }, { products: cart.products });
+        console.log(result);
+        
+        res.status(201).json({
+            message: 'Producto agregado al carrito correctamente',
+            result,
         });
-        res.json({ message: 'Producto agregado al carrito correctamente', cart });
     } catch (error) {
         console.error('Error al agregar el producto al carrito:', error);
         res.status(500).json({ error: 'No se pudo agregar el producto al carrito' });
@@ -112,7 +117,7 @@ router.put("/:cid/products/:pid", async(req,res)=>{
 router.delete('/:cid', async (req, res)=>{
     const cartId = req.params.cid;
     try {
-        const deleteCart = await cartsModel.updateOne({_id:cartId},  { $set: { products: [] } },
+        const deleteCart = await cartModel.updateOne({_id:cartId},  { $set: { products: [] } },
             (err, result) => {
                 if (err) {
                 console.error('Error al vaciar el carrito:', err);
@@ -131,7 +136,5 @@ router.delete('/:cid', async (req, res)=>{
         res.status(500).json({ error: 'No se pudo eliminar el carrito' });
     }
 });
-router.put("/:cid/products/:pid", async(req,res)=>{
 
-});
 export default router;

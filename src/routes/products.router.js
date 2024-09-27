@@ -12,7 +12,7 @@ router.get("/", async(req,res)=>{
         const page = parseInt(req.query.page) || 1;
         const products = await ProductModel.paginate({},{page, limit:limit, lean:true});
         console.log(products);
-        res.status(200).send({result: "success", payload:products})
+        res.render(200).send({result: "success", payload:products})
         
     } catch (error) {
         console.error('Error al obtener los productos:', error);

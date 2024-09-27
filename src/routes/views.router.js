@@ -7,13 +7,20 @@ const viewsRouter = Router();
 viewsRouter.use(bodyParser.json());
 
 viewsRouter.get("/", async(req, res) => {
-    let products = await ProductModel.find()
-    products = await ProductModel.aggregate([
-        { $group: { _id: "$category", total: { $sum: "$price" }}},
-        
-    ])
+    let products = await ProductModel.find().lean()
+    console.log(products);
+    
     res.render('home',{
-        title: 'Backend | Handlebars',
+        title: 'Backend | Productos',
+        products: products
+    });
+});
+viewsRouter.get("/about", async(req, res) => {
+    let products = await ProductModel.find().lean()
+    console.log(products);
+    
+    res.render('about',{
+        title: 'E-commerce | Sobre nosotros',
         products: products
     });
 });
